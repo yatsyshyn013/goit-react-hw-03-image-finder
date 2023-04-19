@@ -1,9 +1,9 @@
-export function ImageGalleryItem({item }) {
-    console.log(item);
+export function ImageGalleryItem({imageItem }) {
+    console.log(imageItem);
     return (
     
          <li className="gallery-item">
-                            <img src={item.webformatURL} alt="" data-url={item.largeImageURL} width='20px'/>
+                            <img src={imageItem.webformatURL} alt="" data-url={imageItem.largeImageURL} width='60px'/>
                         </li>
         
     )

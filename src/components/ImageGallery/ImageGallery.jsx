@@ -6,7 +6,7 @@ export function ImageGallery({request}) {
         <ul className="gallery">
 
             {request.map(item => (
-                <ImageGalleryItem item={request} key={item.id} />
+                <ImageGalleryItem imageItem={request} key={item.id} />
             ))}
             
 
