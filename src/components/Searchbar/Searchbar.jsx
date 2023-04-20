@@ -1,4 +1,6 @@
 import {  Field, Form, Formik, } from 'formik';
+import { Header, SearchForm, FormButton, FormButtonLabel, Input } from './Searchbar.styled';
+import { FaSearch } from 'react-icons/fa/';
 
 
 export function Searchbar({onSubmit}) {
@@ -8,25 +10,25 @@ export function Searchbar({onSubmit}) {
     }
 
     function handleSubmit(values, {resetForm}) {
-        console.log(values);
+        // console.log(values);
             
             onSubmit(values)
             resetForm();
     }
 
     return (
-            <header className="searchbar">
+            <Header className="searchbar">
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
             >
                 
-                    <Form className="form">
-                        <button type="submit" className="button">
-                        <span className="button-label">Search</span>
-                        </button>
+                    <SearchForm className="form">
+                        <FormButton type="submit" className="button">
+                            <FaSearch/>
+                        </FormButton>
 
-                    <Field
+                    <Input
                         name="inputValue"
                         className="input"
                         type="text"
@@ -34,9 +36,9 @@ export function Searchbar({onSubmit}) {
                         autoFocus
                         placeholder="Search images and photos"
                         />
-                    </Form>
+                    </SearchForm>
                 </Formik>
-</header>
+</Header>
     )
 }
 

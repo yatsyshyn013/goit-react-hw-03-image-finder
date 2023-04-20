@@ -1,10 +1,16 @@
-export function ImageGalleryItem({imageItem }) {
-    console.log(imageItem);
+import { GalleryItem, GalleryItemImage } from "./ImageGalleryItem.styled";
+
+export function ImageGalleryItem({item}) {
+    // console.log(imageItem);
     return (
     
-         <li className="gallery-item">
-                            <img src={imageItem.webformatURL} alt="" data-url={imageItem.largeImageURL} width='60px'/>
-                        </li>
+         <GalleryItem className="gallery-item">
+            <GalleryItemImage
+                src={item.webformatURL}
+                alt="photo"
+                data-url={item.largeImageURL}
+                width='260px' />
+        </GalleryItem>
         
     )
 }

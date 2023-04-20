@@ -1,15 +1,16 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
+import { Gallery } from "./ImageGallery.styled";
 
-export function ImageGallery({request}) {
-    console.log(request);
+export function ImageGallery({items}) {
+    console.log(items);
     return (
-        <ul className="gallery">
+        <Gallery className="gallery">
 
-            {request.map(item => (
-                <ImageGalleryItem imageItem={request} key={item.id} />
+            {items.map(item => (
+                <ImageGalleryItem item={item} key={item.id} />
             ))}
             
 
-        </ul>
+        </Gallery>
     )
 }
