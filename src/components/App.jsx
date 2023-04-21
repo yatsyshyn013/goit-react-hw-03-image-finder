@@ -4,9 +4,12 @@ import { ImagesApi } from './PixabayAPI/PixabayAPI'
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Container } from './App.styled';
 import Button from './Button/Button';
-import { ThreeDots } from 'react-loader-spinner';
+import { ToastContainer, toast  } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ModalWindow from './Modal/Modal';
 import { logDOM } from '@testing-library/react';
+import { Link, animateScroll as scroll } from "react-scroll";
+import { Loader } from './Loader/Loader';
 
 
 class App extends Component {
@@ -17,6 +20,7 @@ class App extends Component {
     loading: false,
     showModal: false,
     modalUrl: null,
+    totalResults: 0,
   } 
 
   onInputValue = async (value) => {
@@ -25,8 +29,17 @@ class App extends Component {
     const request = await ImagesApi(value.inputValue, page)
     const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
       
-      return { id, webformatURL, largeImageURL }});
-    
+      return { id, webformatURL, largeImageURL}});
+    console.log(data);
+
+    if (data.length===0) {
+       toast.error('Sorry, there are no images matching your search query. Please try again.');
+    }  else {
+            toast.info(
+                `Hooray! We found ${request.totalHits} images.`
+      );
+            
+        }
     
     this.setState({
       search: value.inputValue,
@@ -34,12 +47,6 @@ class App extends Component {
       page: 1,
       loading: false
     })
-
-    // console.log(this.state.inputValue);
-    // console.log(this.state.search);
-
-    // console.log(request);
-    // console.log(this.state.inputValue);
   }
 
   updatePage = (pageNumber) => {
@@ -54,6 +61,7 @@ class App extends Component {
       this.setState({
         inputValue: [],
         page: 1,
+        totalResults: 0,
       });
 
       this.setState({ loading: true });
@@ -66,25 +74,26 @@ class App extends Component {
       this.setState({
         inputValue: data,
         loading: false,
+        totalResults: request.totalHits,
         
       })
     }
 
     else if (prevState.page !== page) {
       this.setState({ loading: true });
+    
       const request = await ImagesApi(search, page)
       const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
       
       return { id, webformatURL, largeImageURL }});
       
-
       this.setState({
         inputValue: [...prevState.inputValue, ...data],
         loading: false,
         
       })
       // console.log(request);
-      // console.log(page);
+      // console.log(data);
      
     }
 
@@ -107,43 +116,42 @@ class App extends Component {
       modalUrl: element.dataset.url,
     });
   };
+
+  
  
   render() { 
+
+    const {loading, inputValue, showModal, modalUrl, totalResults} = this.state;
+
     return (
-       <Container
-      >
+       <Container>
 
         <Searchbar onSubmit={this.onInputValue} />
 
-        {this.state.loading && (
-                <ThreeDots 
-                      height="180" 
-                      width="180" 
-                      radius="9"
-                      color="#3f51b5" 
-                      ariaLabel="three-dots-loading"
-            wrapperStyle={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"}}
-                      wrapperClassName=""
-                      visible={true}
-          />)}
         
-        {this.state.inputValue.length > 0 && (<ImageGallery items={this.state.inputValue} openModal={this.openModalImg} />)}
         
-
-        {this.state.inputValue.length > 0 && (
-          <Button updatePage={this.updatePage} />
+        {inputValue.length > 0 && (
+            <ImageGallery items={inputValue} openModal={this.openModalImg} />
         )}
 
-        {this.state.showModal && (
+        {loading && (<Loader/>)}
+
+        {inputValue.length > 0 && inputValue.length < totalResults && !loading && (
+            <Button updatePage={this.updatePage} />
           
-          <ModalWindow toggle={this.toggleModal} url={this.state.modalUrl} />
         )}
         
 
-        {/* <ImagesApi inputValue={this.state.inputValue} /> */}
+        {showModal && (
+          <ModalWindow toggle={this.toggleModal} url={modalUrl} />
+        )}
+
+         <ToastContainer
+          autoClose={3000}
+          position="top-right"
+          theme="colored"
+/>
+
     </Container>
     );
   }

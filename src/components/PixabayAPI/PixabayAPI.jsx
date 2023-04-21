@@ -1,4 +1,5 @@
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
     
 
@@ -28,4 +29,9 @@ export async function ImagesApi(value, page = 1) {
     }
     
     
+}
+
+ImagesApi.propTypes = {
+    value: PropTypes.string.isRequired,
+    page: PropTypes.number.isRequired
 }

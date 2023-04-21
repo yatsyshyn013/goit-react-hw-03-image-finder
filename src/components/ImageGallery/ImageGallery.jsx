@@ -1,5 +1,15 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { Gallery } from "./ImageGallery.styled";
+import PropTypes from 'prop-types';
+
+// const { height: cardHeight } = document
+//   .querySelector(".gallery")
+//   .firstElementChild.getBoundingClientRect();
+
+// window.scrollBy({
+//   top: cardHeight * 2,
+//   behavior: "smooth",
+// });
 
 export function ImageGallery({items, openModal}) {
     // console.log(items);
@@ -13,4 +23,9 @@ export function ImageGallery({items, openModal}) {
 
         </Gallery>
     )
+}
+
+ImageGallery.propTypes = {
+    items: PropTypes.array.isRequired,
+    openModal: PropTypes.func.isRequired,
 }
