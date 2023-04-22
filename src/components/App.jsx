@@ -20,34 +20,45 @@ class App extends Component {
     loading: false,
     showModal: false,
     modalUrl: null,
-    totalResults: 0,
+    totalResults: 0, 
+    error: null,
   } 
 
   onInputValue = async (value) => {
     this.setState({ loading: true });
     const { page } = this.state;
-    const request = await ImagesApi(value.inputValue, page)
-    const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
-      
-      return { id, webformatURL, largeImageURL}});
-   
 
-    if (data.length===0) {
-       toast.error('Sorry, there are no images matching your search query. Please try again.');
-    }  else {
-            toast.info(
-                `Hooray! We found ${request.totalHits} images.`
-      );
+    try {
+              const request = await ImagesApi(value.inputValue, page)
+              const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
+                
+                return { id, webformatURL, largeImageURL}});
             
-        }
+
+              if (data.length===0) {
+                toast.error('Sorry, there are no images matching your search query. Please try again.', {
+                      icon: '💔',
+                    });
+              }  else {
+                      toast.info(
+                          `Hooray! We found ${request.totalHits} images.`
+                );
+                      
+                  }
+              
+              this.setState({
+                search: value.inputValue,
+                inputValue: data,
+                page: 1,
+                loading: false,
+                totalResults: request.totalHits,
+              })
+    } catch (error) {
+      this.setState({ error });
+    } finally {
+        this.setState({ isLoading: false });
+      }
     
-    this.setState({
-      search: value.inputValue,
-      inputValue: data,
-      page: 1,
-      loading: false,
-      totalResults: request.totalHits,
-    })
   }
 
   updatePage = (pageNumber) => {
@@ -59,40 +70,53 @@ class App extends Component {
     // console.log(search);
 
     if (prevState.search !== search) {
-      this.setState({
+
+       this.setState({
         inputValue: [],
         page: 1,
-        totalResults: 0,
-      });
+         totalResults: 0,
+        loading: true
+         });
 
-      this.setState({ loading: true });
-      const request = await ImagesApi(search)
-      const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
-      
-      return { id, webformatURL, largeImageURL }});
-      
-
-      this.setState({
-        inputValue: data,
-        loading: false,
-        totalResults: request.totalHits,
+      try {
+        const request = await ImagesApi(search)
+        const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
         
-      })
+        return { id, webformatURL, largeImageURL }});
+        
+
+        this.setState({
+          inputValue: data,
+          loading: false,
+          totalResults: request.totalHits,
+          
+        })
+    } catch (error) {
+      this.setState({ error });
     }
 
-    else if (prevState.page !== page) {
-      this.setState({ loading: true });
-    
-      const request = await ImagesApi(search, page)
-      const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
       
-      return { id, webformatURL, largeImageURL }});
-       console.log(data);
-      this.setState({
-        inputValue: [...prevState.inputValue, ...data],
-        loading: false,
-        
-      })
+    }
+
+    if (prevState.page !== page) {
+      this.setState({ loading: true });
+
+      try {
+          const request = await ImagesApi(search, page)
+          const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
+      
+          return { id, webformatURL, largeImageURL }});
+          //  console.log(data);
+          this.setState({
+            inputValue: [...prevState.inputValue, ...data],
+            loading: false,
+            
+          })
+      } catch (error) {
+        this.setState({ error });
+      }
+    
+      
       // console.log(request);
       // console.log(data);
      
