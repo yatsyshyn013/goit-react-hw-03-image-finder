@@ -29,12 +29,19 @@ class App extends Component {
     const { page } = this.state;
 
     try {
-              const request = await ImagesApi(value.inputValue, page)
+              
+            
+               if (value.inputValue === '') {
+                 return toast.error('The search field cannot be empty', {
+                      icon: '👻',
+                    });
+      }
+      
+            const request = await ImagesApi(value.inputValue, page)
               const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
                 
                 return { id, webformatURL, largeImageURL}});
-            
-
+      
               if (data.length===0) {
                 toast.error('Sorry, there are no images matching your search query. Please try again.', {
                       icon: '💔',
@@ -146,7 +153,7 @@ class App extends Component {
  
   render() { 
 
-    const {loading, inputValue, showModal, modalUrl, totalResults} = this.state;
+    const {loading, inputValue, showModal, modalUrl, totalResults, search} = this.state;
 
     return (
        <Container>
@@ -159,7 +166,7 @@ class App extends Component {
             <ImageGallery items={inputValue} openModal={this.openModalImg} />
         )}
 
-        {loading && (<Loader/>)}
+        {loading && search !== '' &&(<Loader/>)}
 
         {inputValue.length > 0 && inputValue.length < totalResults && !loading && (
             <Button updatePage={this.updatePage} />
