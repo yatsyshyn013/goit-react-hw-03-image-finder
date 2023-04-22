@@ -30,7 +30,7 @@ class App extends Component {
     const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
       
       return { id, webformatURL, largeImageURL}});
-    console.log(data);
+   
 
     if (data.length===0) {
        toast.error('Sorry, there are no images matching your search query. Please try again.');
@@ -45,7 +45,8 @@ class App extends Component {
       search: value.inputValue,
       inputValue: data,
       page: 1,
-      loading: false
+      loading: false,
+      totalResults: request.totalHits,
     })
   }
 
@@ -86,7 +87,7 @@ class App extends Component {
       const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
       
       return { id, webformatURL, largeImageURL }});
-      
+       console.log(data);
       this.setState({
         inputValue: [...prevState.inputValue, ...data],
         loading: false,
