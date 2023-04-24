@@ -14,6 +14,7 @@ export function Searchbar({onSubmit}) {
             
             onSubmit(values)
             resetForm();
+        
     }
 
     return (

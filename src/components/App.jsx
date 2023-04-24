@@ -24,64 +24,16 @@ class App extends Component {
     error: null,
   } 
 
-  onInputValue = async (value) => {
-    this.setState({ loading: true });
-    const { page } = this.state;
-
-    try {
-              
-            
-               if (value.inputValue === '') {
-                 return toast.error('The search field cannot be empty', {
-                      icon: '👻',
-                    });
-      }
-      
-            const request = await ImagesApi(value.inputValue, page)
-              const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
-                
-                return { id, webformatURL, largeImageURL}});
-      
-              if (data.length===0) {
-                toast.error('Sorry, there are no images matching your search query. Please try again.', {
-                      icon: '💔',
-                    });
-              }  else {
-                      toast.info(
-                          `Hooray! We found ${request.totalHits} images.`
-                );
-                      
-                  }
-              
-              this.setState({
-                search: value.inputValue,
-                inputValue: data,
-                page: 1,
-                loading: false,
-                totalResults: request.totalHits,
-              })
-    } catch (error) {
-      this.setState({ error });
-    } finally {
-        this.setState({ isLoading: false });
-      }
-    
-  }
-
-  updatePage = (pageNumber) => {
-    this.setState({ page: pageNumber})
-  }
-
-  async componentDidUpdate(prevProp, prevState) { 
+   async componentDidUpdate(prevProp, prevState) { 
     const { search, page, loading } = this.state;
     // console.log(search);
 
     if (prevState.search !== search) {
-
+      // console.log(1);
        this.setState({
         inputValue: [],
         page: 1,
-         totalResults: 0,
+        totalResults: 0,
         loading: true
          });
 
@@ -91,6 +43,16 @@ class App extends Component {
         
         return { id, webformatURL, largeImageURL }});
         
+        if (data.length===0) {
+                toast.error('Sorry, there are no images matching your search query. Please try again.', {
+                      icon: '💔',
+                    });
+              }  else {
+                      toast.info(
+                          `Hooray! We found ${request.totalHits} images.`
+                );
+                      
+                  }
 
         this.setState({
           inputValue: data,
@@ -105,9 +67,14 @@ class App extends Component {
       
     }
 
-    if (prevState.page !== page) {
+    else if (prevState.page !== page && prevState.page < page) {
+      // console.log(prevState.search);
+      // console.log(search);
+      // console.log(2);
       this.setState({ loading: true });
 
+      
+      
       try {
           const request = await ImagesApi(search, page)
           const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
@@ -127,10 +94,71 @@ class App extends Component {
       // console.log(request);
       // console.log(data);
      
-    }
+     } 
 
   }
 
+
+  onInputValue = async (value) => {
+    // this.setState({ loading: true });
+    const { page } = this.state;
+
+    try {
+              const filteredInfo = value.inputValue.trim()
+              // console.log(filteredInfo);
+            
+               if (filteredInfo === '') {
+                 return toast.error('The search field cannot be empty', {
+                      icon: '👻',
+                    });
+      }
+
+            // const request = await ImagesApi(filteredInfo, page)
+            //   const data = await request.hits.map(({ id, webformatURL, largeImageURL }) => {
+                
+            //     return { id, webformatURL, largeImageURL}});
+      
+              // if (data.length===0) {
+              //   toast.error('Sorry, there are no images matching your search query. Please try again.', {
+              //         icon: '💔',
+              //       });
+              // }  else {
+              //         toast.info(
+              //             `Hooray! We found ${request.totalHits} images.`
+              //   );
+                      
+              //     }
+              
+              this.setState({
+                search: filteredInfo,
+                // inputValue: data,
+                // page: 1,
+                // loading: false,
+                // totalResults: request.totalHits,
+              })
+              
+              if (filteredInfo === this.state.search) {
+                  toast.error(`This request "${filteredInfo}" is already in progress. It is not possible to send two identical requests in turn`, {
+                      icon: '💞',
+        });
+       
+      
+      }
+      
+
+    } catch (error) {
+      this.setState({ error });
+    } finally {
+        this.setState({ loading: false });
+      }
+    
+  }
+
+  updatePage = (pageN) => {
+    this.setState({ page: pageN})
+  }
+
+ 
 
   toggleModal = () => {
     this.setState(({showModal}) => ({
@@ -153,7 +181,7 @@ class App extends Component {
  
   render() { 
 
-    const {loading, inputValue, showModal, modalUrl, totalResults, search} = this.state;
+    const {loading, inputValue, showModal, modalUrl, totalResults, search, page} = this.state;
 
     return (
        <Container>
@@ -169,7 +197,7 @@ class App extends Component {
         {loading && search !== '' &&(<Loader/>)}
 
         {inputValue.length > 0 && inputValue.length < totalResults && !loading && (
-            <Button updatePage={this.updatePage} />
+            <Button updatePage={this.updatePage} numberPage={page}/>
           
         )}
         
@@ -179,7 +207,7 @@ class App extends Component {
         )}
 
          <ToastContainer
-          autoClose={2000}
+          autoClose={3000}
           position="top-right"
           theme="colored"
 />

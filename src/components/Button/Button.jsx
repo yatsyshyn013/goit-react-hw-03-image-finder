@@ -11,12 +11,12 @@ class Button extends Component {
     } 
     
     ChangePage = () => {
-        this.setState(prevState => {
-            return { page: prevState.page + 1 }
-        }, () => {
+        this.setState( { page: this.props.numberPage + 1 }, () => {
             this.props.updatePage(this.state.page);         
-            
-    })
+             
+        })
+        
+        
     }
 
     render() { 
